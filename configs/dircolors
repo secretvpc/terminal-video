@@ -1,0 +1,21 @@
+# Custom .dircolors example
+
+# Default file types
+NORMAL 00
+FILE 00
+DIR 01;34
+LINK 01;36
+FIFO 40;33
+SOCK 01;35
+BLK 40;33;01
+CHR 40;33;01
+EXEC 01;32
+
+# Extensions
+*.sh 01;32
+*.md 01;36
+*.py 01;34
+*.jpg 01;35
+*.mp4 01;35
+*.cast 01;31
+*.svg 01;33
