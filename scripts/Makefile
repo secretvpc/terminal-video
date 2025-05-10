@@ -1,29 +1,52 @@
-.PHONY: all typing guru svg mp4 overlay clean
+# Makefile for terminal-video pipeline
 
-# Input/output files
-RAW_CAST=assets/raw/demo.cast
-TYPED_CAST=assets/processed/demo-typed.cast
-GURU_CAST=assets/processed/demo-guru.cast
-SVG=assets/visuals/demo.svg
-MP4=assets/captures/demo.mp4
-MOV=assets/captures/demo-overlay.mov
+# Directories
+RAW_DIR := assets/raw
+PROCESSED_DIR := assets/processed
+VISUALS_DIR := assets/visuals
+CAPTURES_DIR := assets/captures
 
-all: typing guru svg mp4 overlay
+# Tools
+PYTHON := python3
+SIMULATE := scripts/simulate-typing.py
+GURU := scripts/simulate-guru-extended.py
+OVERLAY := scripts/generate-terminal-overlay.sh
+RENDER := scripts/render-cast-wsl.sh
 
-typing:
-	./scripts/simulate-typing.py $(RAW_CAST) $(TYPED_CAST)
+# All .cast recordings
+CAST_FILES := $(wildcard $(RAW_DIR)/*.cast)
+PROCESSED_CASTS := $(patsubst $(RAW_DIR)/%.cast,$(PROCESSED_DIR)/%.cast,$(CAST_FILES))
+SVG_FILES := $(patsubst $(RAW_DIR)/%.cast,$(VISUALS_DIR)/%.svg,$(CAST_FILES))
+MP4_FILES := $(patsubst $(RAW_DIR)/%.cast,$(CAPTURES_DIR)/%.mp4,$(CAST_FILES))
+MOV_FILES := $(patsubst $(RAW_DIR)/%.cast,$(CAPTURES_DIR)/%.mov,$(CAST_FILES))
 
-guru:
-	./scripts/simulate-guru-extended.py $(TYPED_CAST) $(GURU_CAST)
+.PHONY: all simulate render overlay clean
 
-svg:
-	svg-term --in $(GURU_CAST) --out $(SVG) --window --theme dracula --font "JetBrains Mono"
+all: simulate render overlay
 
-mp4:
-	ffmpeg -loop 1 -i $(SVG) -t 10 -pix_fmt yuv420p $(MP4)
+simulate: $(PROCESSED_CASTS)
 
-overlay:
-	scripts/generate-terminal-overlay.sh $(GURU_CAST) dracula "JetBrains Mono" 10 30
+render: $(SVG_FILES) $(MP4_FILES)
 
+overlay: $(MOV_FILES)
+
+$(PROCESSED_DIR)/%.cast: $(RAW_DIR)/%.cast
+	@echo "[simulate] Processing $< → $@"
+	$(PYTHON) $(SIMULATE) $< > $@.tmp && \
+	$(PYTHON) $(GURU) $@.tmp > $@ && \
+	rm -f $@.tmp
+
+$(VISUALS_DIR)/%.svg: $(PROCESSED_DIR)/%.cast
+	@echo "[render:svg] Generating SVG $@"
+	svg-term --in $< --out $@ --window --padding 10 --no-cursor --frame --theme "dracula"
+
+$(CAPTURES_DIR)/%.mp4: $(VISUALS_DIR)/%.svg
+	@echo "[render:mp4] Rendering MP4 $@"
+	ffmpeg -y -loop 1 -i $< -c:v libx264 -t 10 -pix_fmt yuv420p $@
+
+$(CAPTURES_DIR)/%.mov: $(PROCESSED_DIR)/%.cast
+	@echo "[render:mov] Creating MOV $@"
+	bash $(OVERLAY) $< $@
+	
 clean:
-	rm -f $(TYPED_CAST) $(GURU_CAST) $(SVG) $(MP4) $(MOV)
+	rm -f $(PROCESSED_CASTS) $(SVG_FILES) $(MP4_FILES) $(MOV_FILES)

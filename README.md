@@ -61,6 +61,50 @@ The following guides are available under `docs/`:
 * `terminal-resolution-guide.md`
 * `asciinema-coloring-guide.md`
 * `asciinema-integration-guide.md`
+* `workflow-overview.md`
+* `environment-setup-wsl.md`
+* `standards-and-tools.md`
+
+---
+
+## Makefile Workflow
+
+The `scripts/Makefile` defines the automated build chain for converting `.cast` files into final video outputs.
+
+### Build the Complete Pipeline
+
+To execute all transformation stages from raw `.cast` to rendered `.mov`:
+
+```bash
+make -C scripts
+```
+
+This target performs:
+
+1. Typing simulation → `assets/processed/*.cast`
+2. Guru enhancements (optional)
+3. SVG rendering → `assets/visuals/*.svg`
+4. MP4 encoding → `assets/captures/*.mp4`
+5. MOV overlay generation → `assets/captures/*.mov`
+
+### Targeted Builds
+
+```bash
+make -C scripts simulate    # Generate processed .cast files only
+make -C scripts render      # Generate .svg and .mp4 from processed casts
+make -C scripts overlay     # Generate transparent overlays (.mov)
+make -C scripts clean       # Remove all generated outputs
+```
+
+### Environment Validation
+
+To verify prerequisites and directory structure:
+
+```bash
+bash scripts/check-env.sh
+```
+
+This script checks for required binaries and initializes the `assets/` directory tree if missing.
 
 ---
 
@@ -71,6 +115,34 @@ The following guides are available under `docs/`:
 * ffmpeg (w/ libx264, ProRes)
 * Python 3.x + rich
 * bash / WSL / POSIX-compliant shell
+
+---
+
+## Environment Example Configuration
+
+A sample `.env.example` file is included for local parameterization:
+
+```dotenv
+# Environment configuration for terminal-video
+
+# Output folders
+RAW_DIR=assets/raw
+PROCESSED_DIR=assets/processed
+VISUALS_DIR=assets/visuals
+CAPTURES_DIR=assets/captures
+
+# Theme and font for rendering
+SVG_THEME=dracula
+FONT=JetBrains Mono
+RESOLUTION=128x72
+
+# Typing simulation parameters
+TYPING_PROFILE=default  # options: default, guru, slow, fast
+
+# Overlay render settings
+MOV_DURATION=10  # seconds
+MOV_TRANSPARENCY=true
+```
 
 ---
 
