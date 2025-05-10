@@ -76,6 +76,41 @@ ffmpeg -i demo.mp4 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" demo-padded.mp4
 
 ---
 
+## Rendering with Transparent Background
+
+For use cases such as overlaying terminal video on other footage or compositing in video editors (e.g. Adobe Premiere, DaVinci Resolve), render with alpha channel support.
+
+### SVG Export (vector + transparent)
+
+```bash
+npx svg-term-cli \
+  --in demo.cast \
+  --out demo-transparent.svg \
+  --window --no-cursor \
+  --padding 20 \
+  --term transparency
+```
+
+### MOV Export with Alpha Channel
+
+1. Use a browser automation tool (e.g. Puppeteer) to load `.cast` in `asciinema-player` with transparent CSS.
+2. Record using screen capture (OBS or headless Chrome with `--enable-blink-features=PaintHolding`).
+3. Encode with `ffmpeg`:
+
+```bash
+ffmpeg -i input.mov \
+  -pix_fmt yuva420p \
+  -c:v qtrle \
+  demo-alpha.mov
+```
+
+### Notes
+
+* Ensure background CSS is set to `transparent` in HTML container.
+* `.mp4` format does **not** support transparency. Use `.mov` or `.webm` instead.
+
+---
+
 ## Best Practices
 
 * Maintain alpha-channel versions for editing workflows
