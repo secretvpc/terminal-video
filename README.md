@@ -1,3 +1,7 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
+
 # Terminal Video Production Toolkit
 
 ## Overview
@@ -70,8 +74,8 @@ npx svg-term-cli --in guru.cast --out demo.svg
 
 ## License
 
-MIT
+This project is licensed under the [MIT License](./LICENSE).
 
 ## Authors
 
-Maintained by the terminal-video project team.
+Maintained by the terminal-video project team & SecretVPC.
