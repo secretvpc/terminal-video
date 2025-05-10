@@ -2,158 +2,76 @@
 
 ## Overview
 
-This repository provides a modular, CLI-first framework for capturing, simulating, and rendering terminal sessions as high-quality video. It is designed for educational content production, technical tutorials, and professional screencasts. The toolkit builds upon `asciinema` and enhances it with automation, styling, and rendering workflows.
+This project provides a modular pipeline for producing high-quality, stylized video from CLI-based workflows. It leverages `asciinema` recordings, post-processes them with simulated typing behavior, and outputs polished `.svg`, `.mp4`, or `.mov` formats suitable for documentation, tutorials, or video production pipelines.
+
+The entire pipeline is optimized to minimize manual intervention and maximize repeatability across Linux and WSL/Windows environments.
 
 ---
 
-## Objectives
+## Use Case
 
-* Enable consistent, high-fidelity terminal capture across environments
-* Provide realistic typing and command simulation ("guru mode")
-* Support SVG and video output, including transparent overlays
-* Allow integration with Hugo, MkDocs, or other documentation systems
-
----
-
-## Directory Layout
-
-```text
-terminal-video/
-├── scripts/         # CLI automation scripts for each workflow stage
-├── assets/          # Input and generated output files (cast, svg, mp4)
-├── configs/         # Terminal appearance customization (colors, fonts)
-├── docs/            # Supplementary guides and technical documentation
-```
+* DevOps and SRE teams producing terminal screencasts
+* Technical educators generating step-by-step CLI tutorials
+* Documentation teams integrating vector terminals into Hugo or MkDocs
 
 ---
 
-## Functional Modules
+## Architecture
 
-| Stage      | Script                         | Input              | Output                       | Location           |
-| ---------- | ------------------------------ | ------------------ | ---------------------------- | ------------------ |
-| Recording  | `prepare-and-record-cast.sh`   | —                  | `assets/raw/*.cast`          | Shell script       |
-| Typing Sim | `simulate-typing.py`           | `raw/*.cast`       | `processed/*.cast`           | Python script      |
-| Guru Sim   | `simulate-guru-extended.py`    | `processed/*.cast` | `processed/*.cast`           | Python script      |
-| Rendering  | `render-cast-wsl.sh`           | `.cast`            | `.svg`, `.mp4`               | Shell script (WSL) |
-| Overlay    | `generate-terminal-overlay.sh` | `.cast`            | `.mov` (ProRes, transparent) | Shell script       |
+| Stage    | Tool(s)              | Input             | Output                      |
+| -------- | -------------------- | ----------------- | --------------------------- |
+| Record   | `asciinema`          | CLI session       | `.cast` file                |
+| Simulate | `simulate-typing.py` | raw `.cast`       | guru `.cast`, clean `.cast` |
+| Render   | `svg-term`, `ffmpeg` | processed `.cast` | `.svg`, `.mp4`, `.mov`      |
 
 ---
 
-## Terminal Configuration
+## Machines Involved
 
-* **Font**: JetBrains Mono / Fira Code
-* **Theme**: Dracula, Nord (via `dircolors`)
-* **Resolution**: 128x72 characters (16:9 aspect ratio)
-* See: `docs/terminal-resolution-guide.md`, `configs/LS_COLORS.sh`
+### Machine 1 – Linux (e.g. Ubuntu Server)
+
+* No graphical UI
+* Used for real-time CLI recordings with `asciinema`
+
+### Machine 2 – Windows 11 with WSL2 (Ubuntu)
+
+* Used for editing, simulating, and rendering output
+* Recommended tools: VSCode, Python, Node.js, ffmpeg
 
 ---
 
 ## Documentation
 
-The following guides are available under `docs/`:
+### 🔹 Core Pipeline
 
-* `asciinema-complete-guide.md`
-* `simulate-typing-guide.md`
-* `simulate-guru-extended-guide.md`
-* `convert-cast-to-mp4.md`
-* `terminal-coloring-guide.md`
-* `terminal-overlay-workflow.md`
-* `terminal-resolution-guide.md`
-* `asciinema-coloring-guide.md`
-* `asciinema-integration-guide.md`
-* `workflow-overview.md`
-* `environment-setup-wsl.md`
-* `standards-and-tools.md`
+* [01 – Recording Terminal Sessions](./docs/01-recording-terminal-sessions.md)
+* [02 – Simulate Typing and Optimize](./docs/02-simulate-typing-and-optimize.md)
+* [03 – Style and Render Output](./docs/03-style-and-render-output.md)
+
+### 🔹 Appendix
+
+* [Coloring and Standards](./docs/appendix-coloring-and-standards.md)
 
 ---
 
-## Makefile Workflow
-
-The `scripts/Makefile` defines the automated build chain for converting `.cast` files into final video outputs.
-
-### Build the Complete Pipeline
-
-To execute all transformation stages from raw `.cast` to rendered `.mov`:
+## Quickstart
 
 ```bash
-make -C scripts
-```
+# Machine 1 (Linux Server)
+sudo apt install asciinema
+asciinema rec ./demo.cast
 
-This target performs:
-
-1. Typing simulation → `assets/processed/*.cast`
-2. Guru enhancements (optional)
-3. SVG rendering → `assets/visuals/*.svg`
-4. MP4 encoding → `assets/captures/*.mp4`
-5. MOV overlay generation → `assets/captures/*.mov`
-
-### Targeted Builds
-
-```bash
-make -C scripts simulate    # Generate processed .cast files only
-make -C scripts render      # Generate .svg and .mp4 from processed casts
-make -C scripts overlay     # Generate transparent overlays (.mov)
-make -C scripts clean       # Remove all generated outputs
-```
-
-### Environment Validation
-
-To verify prerequisites and directory structure:
-
-```bash
-bash scripts/check-env.sh
-```
-
-This script checks for required binaries and initializes the `assets/` directory tree if missing.
-
----
-
-## Dependencies
-
-* asciinema
-* svg-term-cli
-* ffmpeg (w/ libx264, ProRes)
-* Python 3.x + rich
-* bash / WSL / POSIX-compliant shell
-
----
-
-## Environment Example Configuration
-
-A sample `.env.example` file is included for local parameterization:
-
-```dotenv
-# Environment configuration for terminal-video
-
-# Output folders
-RAW_DIR=assets/raw
-PROCESSED_DIR=assets/processed
-VISUALS_DIR=assets/visuals
-CAPTURES_DIR=assets/captures
-
-# Theme and font for rendering
-SVG_THEME=dracula
-FONT=JetBrains Mono
-RESOLUTION=128x72
-
-# Typing simulation parameters
-TYPING_PROFILE=default  # options: default, guru, slow, fast
-
-# Overlay render settings
-MOV_DURATION=10  # seconds
-MOV_TRANSPARENCY=true
+# Machine 2 (WSL2 Ubuntu)
+python3 scripts/simulate-typing.py --input demo.cast --output guru.cast
+npx svg-term-cli --in guru.cast --out demo.svg
 ```
 
 ---
 
 ## License
 
-MIT License.
-
----
+MIT
 
 ## Authors
 
-Developed by the `terminal-video` project contributors.
-
-For contributions, see `CONTRIBUTING.md` (if present).
+Maintained by the terminal-video project team.
