@@ -1,60 +1,87 @@
-# 🖥️ Terminal Video Production Toolkit
+# Terminal Video Production Toolkit
 
-A modular, CLI-first toolkit for professional terminal recording, simulation, and video rendering based on `asciinema`.
+## Overview
+
+This repository provides a modular, CLI-first framework for capturing, simulating, and rendering terminal sessions as high-quality video. It is designed for educational content production, technical tutorials, and professional screencasts. The toolkit builds upon `asciinema` and enhances it with automation, styling, and rendering workflows.
 
 ---
 
-## 📂 Project Structure
+## Objectives
+
+* Enable consistent, high-fidelity terminal capture across environments
+* Provide realistic typing and command simulation ("guru mode")
+* Support SVG and video output, including transparent overlays
+* Allow integration with Hugo, MkDocs, or other documentation systems
+
+---
+
+## Directory Layout
 
 ```text
 terminal-video/
-├── scripts/         # All core automation scripts
-├── assets/          # Input/output artifacts
-├── configs/         # Terminal appearance configs
-├── docs/            # Usage guides and references
+├── scripts/         # CLI automation scripts for each workflow stage
+├── assets/          # Input and generated output files (cast, svg, mp4)
+├── configs/         # Terminal appearance customization (colors, fonts)
+├── docs/            # Supplementary guides and technical documentation
 ```
 
 ---
 
-## 🚀 Features
+## Functional Modules
 
-- Typing + Tab-complete simulation (guru mode)
-- Full `.cast` → `.svg` → `.mp4` / `.mov`
-- Transparent overlays for DaVinci Resolve
-- Hugo/MkDocs embed support
-
----
-
-## 🧵 Workflow Overview
-
-| Stage       | Script                        | Input              | Output                | Dir           |
-|-------------|-------------------------------|---------------------|------------------------|---------------|
-| 🎥 Record    | `prepare-and-record-cast.sh`  | —                   | `raw/*.cast`           | `assets/raw/` |
-| ⌨️ Typing    | `simulate-typing.py`          | `raw/*.cast`        | `processed/*.cast`     | `assets/processed/` |
-| 🧠 Guru      | `simulate-guru-extended.py`   | `processed/*.cast`  | `processed/*.cast`     | —             |
-| 🎨 Render    | `render-cast-wsl.sh`          | `*.cast`            | `visuals/*.svg` + `captures/*.mp4` | `assets/` |
-| 🖼️ Overlay   | `generate-terminal-overlay.sh`| `*.cast`            | `captures/*.mov`       | —             |
+| Stage      | Script                         | Input              | Output                       | Location           |
+| ---------- | ------------------------------ | ------------------ | ---------------------------- | ------------------ |
+| Recording  | `prepare-and-record-cast.sh`   | —                  | `assets/raw/*.cast`          | Shell script       |
+| Typing Sim | `simulate-typing.py`           | `raw/*.cast`       | `processed/*.cast`           | Python script      |
+| Guru Sim   | `simulate-guru-extended.py`    | `processed/*.cast` | `processed/*.cast`           | Python script      |
+| Rendering  | `render-cast-wsl.sh`           | `.cast`            | `.svg`, `.mp4`               | Shell script (WSL) |
+| Overlay    | `generate-terminal-overlay.sh` | `.cast`            | `.mov` (ProRes, transparent) | Shell script       |
 
 ---
 
-## 🛠️ Terminal Setup
+## Terminal Configuration
 
-- Font: `JetBrains Mono` / `Fira Code`
-- Theme: Dracula / Nord
-- Resolution: 128×72 (16:9 aspect) → see [terminal-resolution-guide.md](docs/terminal-resolution-guide.md)
+* **Font**: JetBrains Mono / Fira Code
+* **Theme**: Dracula, Nord (via `dircolors`)
+* **Resolution**: 128x72 characters (16:9 aspect ratio)
+* See: `docs/terminal-resolution-guide.md`, `configs/LS_COLORS.sh`
 
 ---
 
-## 📘 Docs
+## Documentation
 
-See full guides in `docs/`:
+The following guides are available under `docs/`:
 
-- [asciinema-complete-guide.md](docs/asciinema-complete-guide.md)
-- [simulate-typing-guide.md](docs/simulate-typing-guide.md)
-- [simulate-guru-extended-guide.md](docs/simulate-guru-extended-guide.md)
-- [convert-cast-to-mp4.md](docs/convert-cast-to-mp4.md)
-- [terminal-coloring-guide.md](docs/terminal-coloring-guide.md)
-- [asciinema-coloring-guide.md](docs/asciinema-coloring-guide.md)
-- [terminal-resolution-guide.md](docs/terminal-resolution-guide.md)
-- [terminal-overlay-workflow.md](docs/terminal-overlay-workflow.md)
-- [asciinema-integration-guide.md](docs/asciinema-integration-guide.md)
+* `asciinema-complete-guide.md`
+* `simulate-typing-guide.md`
+* `simulate-guru-extended-guide.md`
+* `convert-cast-to-mp4.md`
+* `terminal-coloring-guide.md`
+* `terminal-overlay-workflow.md`
+* `terminal-resolution-guide.md`
+* `asciinema-coloring-guide.md`
+* `asciinema-integration-guide.md`
+
+---
+
+## Dependencies
+
+* asciinema
+* svg-term-cli
+* ffmpeg (w/ libx264, ProRes)
+* Python 3.x + rich
+* bash / WSL / POSIX-compliant shell
+
+---
+
+## License
+
+MIT License.
+
+---
+
+## Authors
+
+Developed by the `terminal-video` project contributors.
+
+For contributions, see `CONTRIBUTING.md` (if present).
