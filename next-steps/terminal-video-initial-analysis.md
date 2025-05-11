@@ -1,96 +1,78 @@
-Terminal Video Optimizer and Presentation Toolkit – Initial Analysis Report
+# Terminal Video Optimizer and Presentation Toolkit – Initial Analysis Report
 
-1. Project Scope and Structure
+## 1. Project Scope and Structure
 
-Primary Goal: Enable production of professional, stylized videos from terminal sessions using a modular pipeline.
+**Primary Goal**: Enable production of professional, stylized videos from terminal sessions using a modular pipeline.
 
-Modules Identified:
+**Modules Identified**:
 
-Recording: asciinema used to record raw CLI sessions.
+* **Recording**: `asciinema` used to record raw CLI sessions.
+* **Post-processing**: Python tools to simulate typing, adjust delays, optimize `.cast` files.
+* **Rendering**: Conversion to `.svg`, `.mp4`, `.mov` formats, with style and transparency options.
+* **Styling Standards**: Documented best practices for terminal coloring, prompt design, and visual coherence.
 
-Post-processing: Python tools to simulate typing, adjust delays, optimize .cast files.
+**Documentation Style**: Markdown-based instructional documents organized into logical steps. Each guide follows a template:
 
-Rendering: Conversion to .svg, .mp4, .mov formats, with style and transparency options.
+* Overview
+* Tools and Setup
+* Workflow
+* Tips or Troubleshooting
 
-Styling Standards: Documented best practices for terminal coloring, prompt design, and visual coherence.
+## 2. Strengths
 
-Documentation Style: Markdown-based instructional documents organized into logical steps. Each guide follows a template:
+* **Modular Design**: Clear separation of responsibilities (record > process > render).
+* **Educational Clarity**: Each document is focused, well-structured, and includes command-line snippets.
+* **Focus on UX**: Styling, timing, and resolution are optimized for clarity in visual media.
+* **Standardization**: The appendix codifies CLI aesthetic conventions, which improves pedagogical impact and brand consistency.
 
-Overview
+## 3. Areas for Improvement
 
-Tools and Setup
+### Technical
 
-Workflow
+* No central CLI or `Makefile` to orchestrate the steps across modules.
+* Lack of test samples or expected output folders to verify simulation and encoding fidelity.
+* `assets/processed/` is currently unused or undefined in documentation.
 
-Tips or Troubleshooting
+### Documentation
 
-2. Strengths
+* Missing table of contents or index file. A `docs/index.md` or navigation map would aid discoverability.
+* Absence of a visual schema. A flowchart (SVG or ASCII) would improve conceptual clarity.
+* No demonstrative output examples. Showcasing a before-and-after `.cast` to `.mp4` conversion would strengthen the educational impact.
 
-Modular Design: Clear separation of responsibilities (record > process > render).
+### Extensibility
 
-Educational Clarity: Each document is focused, well-structured, and includes command-line snippets.
+* No plugin architecture. Support for user-defined styling scripts, alternative input formats (e.g., `.ttyrec`), or overlays would be beneficial.
+* No mention of third-party integrations or compatibility with tools like `ttystudio`, `svg-term-cli`, or `ffmpeg` scripting.
 
-Focus on UX: Styling, timing, and resolution are optimized for clarity in visual media.
+## 4. Optimization Strategy
 
-Standardization: The appendix codifies CLI aesthetic conventions, which improves pedagogical impact and brand consistency.
+### Pipeline Automation
 
-3. Areas for Improvement
+Introduce a central CLI script or `Makefile`:
 
-Technical
-
-No central CLI or Makefile to orchestrate the steps across modules.
-
-Lack of test samples or expected output folders to verify simulation and encoding fidelity.
-
-assets/processed/ is currently unused or undefined in documentation.
-
-Documentation
-
-Missing table of contents or index file. A docs/index.md or navigation map would aid discoverability.
-
-Absence of a visual schema. A flowchart (SVG or ASCII) would improve conceptual clarity.
-
-No demonstrative output examples. Showcasing a before-and-after .cast to .mp4 conversion would strengthen the educational impact.
-
-Extensibility
-
-No plugin architecture. Support for user-defined styling scripts, alternative input formats (e.g., .ttyrec), or overlays would be beneficial.
-
-No mention of third-party integrations or compatibility with tools like ttystudio, svg-term-cli, or ffmpeg scripting.
-
-4. Optimization Strategy
-
-Pipeline Automation
-
-Introduce a central CLI script or Makefile:
-
+```
 make record         # wraps asciinema
 make simulate       # calls Python processor
 make render         # calls renderer
+```
 
-Visualization
+### Visualization
 
 Add the following to the documentation:
 
-docs/overview.svg: a pipeline diagram showing all major stages
+* `docs/overview.svg`: a pipeline diagram showing all major stages
+* `docs/demo-before-after.gif`: visual comparison of raw and rendered output
 
-docs/demo-before-after.gif: visual comparison of raw and rendered output
-
-Testing and Reproducibility
+### Testing and Reproducibility
 
 Include:
 
-tests/ directory with sample .cast files and their expected outputs
+* `tests/` directory with sample `.cast` files and their expected outputs
+* Markdown logs showing terminal output differences before and after processing
 
-Markdown logs showing terminal output differences before and after processing
+## 5. Next Actions
 
-5. Next Actions
-
-Propose diff-style or comment-style edits to existing .md documents.
-
-Scaffold missing Makefile, docs/index.md, and a demo/ folder with sample assets.
-
-Recommend visual and UX improvements for rendered output.
-
-Suggest new modules (e.g., speech narration, subtitle embedding, theming presets).
-
+1. Propose diff-style or comment-style edits to existing `.md` documents.
+2. Scaffold missing `Makefile`, `docs/index.md`, and a `demo/` folder with sample assets.
+3. Recommend visual and UX improvements for rendered output.
+4. Suggest new modules (e.g., speech narration, subtitle embedding, theming presets).
