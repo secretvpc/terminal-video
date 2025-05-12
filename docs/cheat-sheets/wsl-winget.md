@@ -31,6 +31,24 @@ Note: Winget installations register Ubuntu distributions with default names such
 
 ## WSL: Core Operations
 
+### Remove and Unregister a Distribution
+
+To fully delete and deregister a WSL distribution:
+
+1. Shut it down if it's running:
+
+```powershell
+wsl --terminate <DistributionName>
+```
+
+2. Unregister and delete all associated data:
+
+```powershell
+wsl --unregister <DistributionName>
+```
+
+Note: This permanently removes the distribution and deletes its file system.
+
 ### List installed distributions
 
 ```powershell
