@@ -23,6 +23,17 @@ Install asciinema:
 sudo apt update && sudo apt install asciinema
 ```
 
+```bash
+sudo snap install asciinema --classic
+```
+
+```bash
+pip install --user asciinema
+~/.local/bin/asciinema rec
+```
+
+Ensure that `~/.local/bin` is included in your `PATH` if installing via `pip`.
+
 ---
 
 ## Step-by-Step Recording Procedure
